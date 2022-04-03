@@ -1,0 +1,9 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Nunito', sans-serif;
+  background-color: #1a1110;
+  /* background-color: #2e262592; */
+  /* background-color: black; */
+  color: rgba(255, 255, 255, 0.951);
+}
