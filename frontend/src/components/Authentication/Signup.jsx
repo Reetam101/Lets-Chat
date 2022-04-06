@@ -1,14 +1,18 @@
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, VStack, useToast } from '@chakra-ui/react'
 import React, { useState } from 'react'
+import axios from 'axios'
+import { useHistory } from 'react-router-dom'
 
 const Signup = () => {
 	const [name, setName] = useState('')
 	const [password, setPassword] = useState('')
 	const [password2, setPassword2] = useState('')
 	const [email, setEmail] = useState('')
-	const [image, setImage] = useState('')
+	const [image, setImage] = useState('https://cdn-icons-png.flaticon.com/512/456/456212.png')
 	const [show, setShow] = useState(false)
 	const [loading, setLoading] = useState(false)
+
+	const history = useHistory()
 
 	const toast = useToast()
 
@@ -56,7 +60,63 @@ const Signup = () => {
 		}
 	}
 
-	const submitHanlder = (e) => {
+	const submitHandler = async (e) => {
+		setLoading(true)
+		if(!name || !email || !password || !password2) {
+			toast({
+				title: "Please fill out all the fields",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom"
+			})
+			setLoading(false)
+			return
+		}
+
+		if(password !== password2) {
+			toast({
+				title: "Passwords do not match",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom"
+			})
+			setLoading(false)
+			return
+		}
+
+		try {
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				}
+			}
+
+			const { data } = axios.post("/api/user", {name, email, password, pic: image}, config)
+			toast({
+				title: "Registration successful",
+				status: "success",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom"
+			})
+
+			localStorage.setItem("userInfo", JSON.stringify(data))
+			history.push('/chats')
+			setLoading(false)
+		} catch(error) {
+			toast({
+				title: "Error occured!",
+				description: error.response.data.message,
+				status: "error",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom"
+			})
+
+			setLoading(false)
+		}
 
 	}
 
@@ -132,7 +192,7 @@ const Signup = () => {
 					colorScheme="myOrange"
 					width="100%"
 					style={{marginTop: 15}}
-					onClick={submitHanlder}
+					onClick={submitHandler}
 					isLoading={loading}
 					>
 						Register
