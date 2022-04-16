@@ -1,8 +1,22 @@
 import {Box, Container, Tab, TabList, TabPanel, TabPanels, Tabs, Text} from '@chakra-ui/react'
+import { useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import Login from '../components/Authentication/Login'
 import Signup from '../components/Authentication/Signup'
 
 const HomePage = () => {
+
+  const history = useHistory()
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"))
+
+    if(user) {
+      history.push("/chats")
+    }
+  }, [history])
+
+
   return (
     <Container maxW='xl' centerContent>
       <Box

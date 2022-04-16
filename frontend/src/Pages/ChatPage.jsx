@@ -1,21 +1,39 @@
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { Box } from '@chakra-ui/react'
+import { useContext, useEffect, useState } from 'react'
+import { ChatContext, ChatState } from '../context/ChatProvider'
+import SideDrawer from '../components/UI/SideDrawer'
+import Chats from '../components/Chats'
+import ChatBox from '../components/ChatBox'
+import { useHistory } from 'react-router-dom'
 
 const ChatPage = () => {
-    const [chats, setChats] = useState([])
-
-    const fetchChats = async() => {
-        const { data } = await axios.get('/api/chat')
-        // console.log(data)
-        setChats(data)
-    }    
-
-    useEffect(() => {
-        fetchChats()
-    }, [])
+    // const { user } = ChatState()
+    // console.log(user)
+    // const history = useHistory()
+    // const [user, setUser] = useState()
+    // useEffect(() => {
+    //     const userInfo = JSON.parse(localStorage.getItem("userInfo"))
+    //     setUser(userInfo) 
+        
+    //     if(!userInfo) {
+    //         history.push("/")
+    //     }
+    // }, [history, setUser])
+    const { user, setUser } = useContext(ChatContext)
+    console.log(user)
     return (
-        <div>
-            {chats.map(chat => <div key={chat._id}>{ chat.chatName }</div>)}
+        <div style={{ width: "100%" }}>
+            {user && <SideDrawer/>}
+            <Box
+                d="flex"
+                justifyContent="space-between"
+                w="100%"
+                h="91.5vh"
+                p="10px">
+                {user && <Chats />}
+                {user && <ChatBox />}
+            </Box>
         </div>
     )
 }

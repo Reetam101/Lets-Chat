@@ -7,3 +7,15 @@
   /* background-color: black; */
   color: rgba(255, 255, 255, 0.951);
 }
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136. 0.281);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
