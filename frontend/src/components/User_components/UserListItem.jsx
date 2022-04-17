@@ -10,6 +10,7 @@ const UserListItem = ({ user, handleClickFunction }) => {
         background: '#74C365',
         color: 'black',
       }}
+      bg={"#3b3c36"}
       w="100%"
       d="flex"
       alignItems="center"

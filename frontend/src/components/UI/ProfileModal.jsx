@@ -23,6 +23,8 @@ const ProfileModal = ({ user, children }) => {
         ) : (
           <IconButton
             d={{ base: 'flex' }}
+            bg={"#3D3C3A"}
+            variant="unstyled"
             icon={<ViewIcon />}
             onClick={onOpen} 
           />

@@ -5,7 +5,7 @@ import { ChatContext } from '../../context/ChatProvider'
 import UserBadgeItem from '../User_components/UserBadgeItem'
 import UserListItem from '../User_components/UserListItem'
 
-const GroupChatModal = ({ children }) => {
+const CreateGroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [groupChatName, setGroupChatName] = useState()
   const [selectedUsers, setSelectedUsers] = useState([])
@@ -85,7 +85,7 @@ const GroupChatModal = ({ children }) => {
 
     } catch(error) {
       toast({
-        title: "Error Occured",
+        title: "Failed to create the chat",
         description: error.message,
         status: "warning",
         duration: 5000,
@@ -154,4 +154,4 @@ const GroupChatModal = ({ children }) => {
   )
 }
 
-export default GroupChatModal
+export default CreateGroupChatModal

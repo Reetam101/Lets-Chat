@@ -21,6 +21,7 @@ const ChatPage = () => {
     //     }
     // }, [history, setUser])
     const { user, setUser } = useContext(ChatContext)
+    const [fetchAgain, setFetchAgain] = useState(false)
     console.log(user)
     return (
         <div style={{ width: "100%" }}>
@@ -31,8 +32,8 @@ const ChatPage = () => {
                 w="100%"
                 h="91.5vh"
                 p="10px">
-                {user && <Chats />}
-                {user && <ChatBox />}
+                {user && <Chats fetchAgain={fetchAgain} />}
+                {user && <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />}
             </Box>
         </div>
     )
