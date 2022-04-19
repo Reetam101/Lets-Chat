@@ -7,7 +7,7 @@ import axios from 'axios'
 import UserListItem from '../User_components/UserListItem'
 
 
-const GroupChatInfoModal = ({ fetchAgain, setFetchAgain }) => {
+const GroupChatInfoModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [groupChatName, setGroupChatName] = useState()
   const [search, setSearch] = useState("")
@@ -20,15 +20,43 @@ const GroupChatInfoModal = ({ fetchAgain, setFetchAgain }) => {
   const { selectedChat, setSelectedChat, user } = useContext(ChatContext)
   
   const handleRemove = async (removed_user) => {
-    // if(selectedChat.groupAdmin._id !== user._id && removed_user._id !== user._id) {
-    //   toast({
-    //     title: "You are not an admin, only admins can remove users from group",
-    //     status: "error",
-    //     duration: 5000,
-    //     isClosable: true,
-    //     position: "bottom"
-    //   })
-    // }
+    if(selectedChat.groupAdmin._id !== user._id && removed_user._id !== user._id) {
+      toast({
+        title: "You are not an admin, only admins can remove users from group",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom"
+      })
+    }
+
+    try {
+      setLoading(true)
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+
+      const { data } = await axios.put('/api/chat/groupremove', {
+        chatId: selectedChat._id,
+        userId: removed_user._id
+      }, config)
+
+      removed_user._id === user._id ? setSelectedChat() : setSelectedChat(data)
+      setFetchAgain(!fetchAgain)
+      fetchMessages()
+      setLoading(false)
+    } catch(error) {
+      toast({
+        title: "Error occured",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom"
+      })
+    }
   }
 
   const handleAddUser = async (added_user) => {
