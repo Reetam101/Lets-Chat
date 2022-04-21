@@ -11,6 +11,9 @@ connectDB()
 
 app.use(express.json())
 
+app.get("/", (req, res) => {
+  res.send('Add /api to see the API routes')
+})
 
 app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/chat', require('./routes/chatRoutes'))
