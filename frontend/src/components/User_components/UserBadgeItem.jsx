@@ -12,7 +12,7 @@ const UserBadgeItem = ({ user, handleFunction }) => {
       mb={2}
       variant="solid"
       fontSize={12}
-      bgColor={"#48A860"}
+      bgColor={"#355E3B"}
       cursor="pointer"
       onClick={handleFunction}
       >

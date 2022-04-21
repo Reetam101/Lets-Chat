@@ -14,11 +14,14 @@ const ENDPOINT = "http://localhost:5000"
 let socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const { user, selectedChat, setSelectedChat } = useContext(ChatContext)
+  const { user, selectedChat, setSelectedChat, notification, setNotification } = useContext(ChatContext)
 
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [newMessage, setNewMessage] = useState("")
+  const [typing, setTyping] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
+
 
   const [socketConnected, setSocketConnected] = useState(false)
   
@@ -26,14 +29,36 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   
   const typingHandler = (e) => {
     setNewMessage(e.target.value)
+
+    if(!socketConnected) return
+
+    if(!typing) {
+      setTyping(true)
+      socket.emit('typing', selectedChat._id)
+    }
+
+    let lastTypingTime = new Date().getTime()
+    let timerLength = 3000
+    setTimeout(() => {
+      const timeNow = new Date().getTime()
+      const timeDiff = timeNow - lastTypingTime
+
+      if(timeDiff >= timerLength && typing) {
+        socket.emit('stop typing', selectedChat._id)
+        setTyping(false)
+      } 
+    }, timerLength)
   }
 
   useEffect(() => {
     socket = io(ENDPOINT)
     socket.emit('setup', user)
-    socket.on('connection', () => {
+    socket.on('connected', () => {
       setSocketConnected(true)
     })
+
+    socket.on('typing', () => setIsTyping(true))
+    socket.on('stop typing', () => setIsTyping(false))
   }, [])
 
   const fetchMessages = async () => {
@@ -66,6 +91,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   
   const sendMessage = async (e) => {
     if(e.key === "Enter" && newMessage) {
+      socket.emit('stop typing', selectedChat._id)
       try {
         const config = {
           headers: {
@@ -80,7 +106,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           chatId: selectedChat._id
         }, config)
         
-        console.log(data)
 
         socket.emit('new message', data)
         setMessages([...messages, data])
@@ -101,6 +126,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on('message recieved', (newMessageRecieved) => {
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
         // give notification
+        if(!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification])
+          setFetchAgain(!fetchAgain)
+        }
       } else {
         setMessages([...messages, newMessageRecieved])
       }
@@ -112,6 +141,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     selectedChatCompare = selectedChat
   }, [selectedChat])
+
 
   return (
     <>
@@ -171,6 +201,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             )}
 
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {isTyping ? <div>
+                <Text
+                  fontSize='xs'
+                  style={{ marginBottom: 15, marginLeft: 0 }}
+                >
+                  Typing...
+                </Text>
+              </div> : (<></>)}
               <Input 
                 bg="#3b3c36"
                 placeholder="Enter a message..."

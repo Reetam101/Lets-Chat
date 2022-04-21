@@ -7,6 +7,8 @@ import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 import ChatLoading from '../ChatLoading'
 import UserListItem from '../User_components/UserListItem'
+import { getSender } from '../../helpers/ChatHelpers'
+import NotificationBadge, { Effect } from 'react-notification-badge'
 
 
 const SideDrawer = () => {
@@ -18,7 +20,7 @@ const SideDrawer = () => {
   const [loadingChat, setLoadingChat] = useState(false)
 
 
-  const { user, setSelectedChat, chats, setChats } = useContext(ChatContext)
+  const { user, setSelectedChat, chats, setChats, notification, setNotification } = useContext(ChatContext)
 
   const toast = useToast()
 
@@ -121,8 +123,23 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}              
+              />
               <BellIcon fontSize="2xl" m={1}/>
             </MenuButton>
+            <MenuList bg={"#242124"} color="whiteAlpha.800" pl={2}>
+              {!notification.length && "No new messages"}
+              {notification.map(n => (
+                <MenuItem variant="solid" key={n._id} onClick={() => {
+                  setSelectedChat(n.chat)
+                  setNotification(notification.filter((x) => x !== n))
+                }}>
+                  {n.chat.isGroupChat ? `New message in ${n.chat.chatName}` : `New Message from ${getSender(user, n.chat.users)}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton colorScheme="myOrange" as={Button} rightIcon={<ChevronDownIcon />}>

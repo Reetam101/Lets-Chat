@@ -22,7 +22,6 @@ const Chats = ({ fetchAgain }) => {
   
       const { data } = await axios.get("/api/chat", config)
       setChats(data)
-      console.log(chats)
     } catch(error) {
       toast({
         title: "Failed to load chats",
@@ -87,16 +86,17 @@ const Chats = ({ fetchAgain }) => {
               <Box
                 onClick={() => setSelectedChat(chat)}
                 cursor="pointer"
-                bg={selectedChat === chat ? "#9acd32" : "#3b3c36"}
+                bg={selectedChat === chat ? "#ACE1AF" : "#3b3c36"}
                 color={selectedChat === chat ? "black" : "white"}
                 px={3}
                 py={2}
                 borderRadius="lg"
                 key={chat._id}
               >
-                <Text>
+                <Text fontWeight="bold">
                   {!chat.isGroupChat ? getSender(loggedUser, chat.users) : chat.chatName}
                 </Text>
+                  {chat.latestMessage && <Text fontSize="sm">{getSender(loggedUser, chat.users)}: {chat.latestMessage.content}</Text> }
               </Box>
             )) }
           </Stack>
