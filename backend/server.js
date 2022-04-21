@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv')
-// const chats = require('./data/data');
 const connectDB = require('./config/db');
+const path = require('path')
 
 const {notFound, errorHandler} = require('./middleware/errorMiddleware')
 
@@ -11,14 +11,24 @@ connectDB()
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-  res.send("Hello")
-})
 
 app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/chat', require('./routes/chatRoutes'))
 app.use("/api/message", require('./routes/messageRoutes'))
 
+// Deployment
+const __dirname1 = path.resolve()
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname1, '/frontend/build')))
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname1, "frontend", "build", "index.html"))
+  })
+} else {
+  app.get("/", (req, res) => {
+    res.send('Add /api to see the API routes')
+  })
+}
 
 app.use(notFound)
 app.use(errorHandler)
